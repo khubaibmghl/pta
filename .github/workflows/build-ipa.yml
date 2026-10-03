@@ -31,10 +31,11 @@ jobs:
 
       - name: Package IPA File
         run: |
-          cd build_tmp/platforms/ios/build/emulator
+          APP_PATH=$(find build_tmp/platforms/ios -name "*.app" | head -n 1)
+          echo "Found APP at $APP_PATH"
           mkdir Payload
-          cp -r *.app Payload/
-          zip -r ../../../../PTA-iOS.ipa Payload
+          cp -r "$APP_PATH" Payload/
+          zip -r PTA-iOS.ipa Payload
 
       - name: Upload IPA Artifact
         uses: actions/upload-artifact@v4
