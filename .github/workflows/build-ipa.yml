@@ -1,0 +1,43 @@
+name: Build iOS IPA
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build-ios:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install Cordova
+        run: |
+          npm install -g cordova
+
+      - name: Create Cordova Project & Build iOS
+        run: |
+          cordova create build_tmp com.phone.ptaios "PTA_iOS"
+          cp index.html styles.css app.js build_tmp/www/
+          cd build_tmp
+          cordova platform add ios@latest
+          cordova build ios --no-sign
+
+      - name: Package IPA File
+        run: |
+          cd build_tmp/platforms/ios/build/emulator
+          mkdir Payload
+          cp -r *.app Payload/
+          zip -r ../../../../PTA-iOS.ipa Payload
+
+      - name: Upload IPA Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: PTA-iOS-IPA
+          path: PTA-iOS.ipa

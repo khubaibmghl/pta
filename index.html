@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Phone - GSM Bridge</title>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="PTA Phone">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="ios-device-frame">
+        <!-- iOS Dynamic Island / Status Bar -->
+        <div class="status-bar">
+            <span class="time-display" id="currentTime">9:41</span>
+            <div class="dynamic-island">
+                <div class="island-indicator" id="islandIndicator"></div>
+            </div>
+            <div class="status-icons">
+                <span id="gatewayStatusIcon">📶</span>
+                <span>🔋 100%</span>
+            </div>
+        </div>
+
+        <!-- Connection Banner -->
+        <div class="connection-banner" id="connectionBanner">
+            <div class="banner-status">
+                <span class="pulse-dot offline" id="bannerDot"></span>
+                <span id="bannerText">Connecting to Gateway (192.168.23.1)...</span>
+            </div>
+            <button class="banner-btn" id="retryConnectionBtn">Retry</button>
+        </div>
+
+        <!-- MAIN TAB VIEWS -->
+        <main class="content-area">
+            <!-- TAB 1: FAVORITES -->
+            <section class="tab-view hidden" id="tabFavorites">
+                <header class="view-header">
+                    <h1>Favorites</h1>
+                    <button class="header-action-btn" id="addFavoriteBtn">+</button>
+                </header>
+                <div class="favorites-grid" id="favoritesGrid">
+                    <!-- Populated dynamically -->
+                </div>
+            </section>
+
+            <!-- TAB 2: RECENTS -->
+            <section class="tab-view hidden" id="tabRecents">
+                <header class="view-header">
+                    <h1>Recents</h1>
+                    <div class="segmented-control">
+                        <button class="segment active" id="recentsAllBtn">All</button>
+                        <button class="segment" id="recentsMissedBtn">Missed</button>
+                    </div>
+                </header>
+                <div class="recents-list" id="recentsList">
+                    <!-- Populated dynamically -->
+                </div>
+            </section>
+
+            <!-- TAB 3: CONTACTS -->
+            <section class="tab-view hidden" id="tabContacts">
+                <header class="view-header">
+                    <h1>Contacts</h1>
+                    <button class="header-action-btn" id="addContactBtn">+</button>
+                </header>
+                <div class="search-box">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" id="contactSearchInput" placeholder="Search contacts...">
+                </div>
+                <div class="contacts-list" id="contactsList">
+                    <!-- Populated dynamically -->
+                </div>
+            </section>
+
+            <!-- TAB 4: KEYPAD (DEFAULT ACTIVE) -->
+            <section class="tab-view" id="tabKeypad">
+                <div class="keypad-display-container">
+                    <input type="tel" class="phone-number-display" id="phoneNumberInput" placeholder="" readonly>
+                    <button class="backspace-btn" id="backspaceBtn">⌫</button>
+                </div>
+                <div class="ios-keypad">
+                    <button class="key-btn" data-key="1"><span class="digit">1</span><span class="letters">&nbsp;</span></button>
+                    <button class="key-btn" data-key="2"><span class="digit">2</span><span class="letters">A B C</span></button>
+                    <button class="key-btn" data-key="3"><span class="digit">3</span><span class="letters">D E F</span></button>
+                    <button class="key-btn" data-key="4"><span class="digit">4</span><span class="letters">G H I</span></button>
+                    <button class="key-btn" data-key="5"><span class="digit">5</span><span class="letters">J K L</span></button>
+                    <button class="key-btn" data-key="6"><span class="digit">6</span><span class="letters">M N O</span></button>
+                    <button class="key-btn" data-key="7"><span class="digit">7</span><span class="letters">P Q R S</span></button>
+                    <button class="key-btn" data-key="8"><span class="digit">8</span><span class="letters">T U V</span></button>
+                    <button class="key-btn" data-key="9"><span class="digit">9</span><span class="letters">W X Y Z</span></button>
+                    <button class="key-btn" data-key="*"><span class="digit">*</span><span class="letters">&nbsp;</span></button>
+                    <button class="key-btn" data-key="0"><span class="digit">0</span><span class="letters">+</span></button>
+                    <button class="key-btn" data-key="#"><span class="digit">#</span><span class="letters">&nbsp;</span></button>
+                </div>
+                <div class="keypad-call-bar">
+                    <button class="call-trigger-btn" id="dialCallBtn" aria-label="Call">
+                        <svg viewBox="0 0 24 24" width="32" height="32" fill="currentColor">
+                            <path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/>
+                        </svg>
+                    </button>
+                </div>
+            </section>
+
+            <!-- TAB 5: SETTINGS -->
+            <section class="tab-view hidden" id="tabSettings">
+                <header class="view-header">
+                    <h1>Settings</h1>
+                </header>
+                <div class="settings-group">
+                    <div class="settings-header-title">ANDROID GATEWAY CONNECTION</div>
+                    <div class="settings-card">
+                        <div class="setting-row">
+                            <label for="gatewayIpInput">Gateway IP Address</label>
+                            <input type="text" id="gatewayIpInput" value="192.168.23.1">
+                        </div>
+                        <div class="setting-row">
+                            <label for="gatewayPortInput">API Port</label>
+                            <input type="number" id="gatewayPortInput" value="8080">
+                        </div>
+                        <div class="setting-row">
+                            <label>Connection Status</label>
+                            <span class="status-pill offline" id="settingsStatusPill">Disconnected</span>
+                        </div>
+                    </div>
+
+                    <div class="settings-header-title">SIP TELEPHONY</div>
+                    <div class="settings-card">
+                        <div class="setting-row">
+                            <label>SIP User Extension</label>
+                            <span class="setting-val">102 (iPhone 15 Pro)</span>
+                        </div>
+                        <div class="setting-row">
+                            <label>SIP Transport</label>
+                            <span class="setting-val">UDP (Local Wi-Fi)</span>
+                        </div>
+                        <div class="setting-row">
+                            <label>CallKit Integration</label>
+                            <span class="setting-val green">Active</span>
+                        </div>
+                    </div>
+
+                    <button class="save-settings-btn" id="saveSettingsBtn">Save & Reconnect Gateway</button>
+                </div>
+            </section>
+        </main>
+
+        <!-- ACTIVE CALL OVERLAY (FULLSCREEN IOS INCALL SCREEN) -->
+        <div class="incall-overlay hidden" id="incallOverlay">
+            <div class="incall-bg-blur"></div>
+            <div class="incall-container">
+                <div class="incall-header">
+                    <span class="incall-subtitle" id="incallStatusSub">Dialing...</span>
+                    <h2 class="incall-caller-name" id="incallCallerName">Unknown</h2>
+                    <span class="incall-caller-number" id="incallCallerNumber">+1 234 567 890</span>
+                </div>
+
+                <div class="incall-avatar">
+                    <span id="incallAvatarInitials">?</span>
+                </div>
+
+                <div class="incall-timer-box">
+                    <span class="timer-title">Answer Timer (OFFHOOK)</span>
+                    <span class="incall-clock" id="incallTimerClock">00:00</span>
+                </div>
+
+                <div class="incall-controls">
+                    <div class="incall-action-row">
+                        <button class="incall-btn-circle" id="muteBtn">
+                            <span class="btn-icon">🎙️</span>
+                            <span class="btn-label">mute</span>
+                        </button>
+                        <button class="incall-btn-circle" id="keypadBtn">
+                            <span class="btn-icon">🔢</span>
+                            <span class="btn-label">keypad</span>
+                        </button>
+                        <button class="incall-btn-circle" id="speakerBtn">
+                            <span class="btn-icon">🔊</span>
+                            <span class="btn-label">speaker</span>
+                        </button>
+                    </div>
+
+                    <div class="incall-hangup-row">
+                        <button class="hard-hangup-trigger" id="hardHangupBtn">
+                            <svg viewBox="0 0 24 24" width="36" height="36" fill="currentColor">
+                                <path d="M12 9c-1.6 0-3.15.25-4.6.72v3.1c0 .39-.23.74-.56.9-.98.49-1.87 1.12-2.66 1.85-.18.18-.43.28-.7.28-.28 0-.53-.11-.71-.29L.29 13.08c-.18-.17-.29-.42-.29-.7 0-.28.11-.53.29-.71C3.34 8.78 7.46 7 12 7s8.66 1.78 11.71 4.67c.18.18.29.43.29.71 0 .28-.11.53-.29.71l-2.48 2.48c-.18.18-.43.29-.71.29-.27 0-.52-.11-.7-.28-.79-.74-1.69-1.36-2.67-1.85-.33-.16-.56-.5-.56-.9v-3.1C15.15 9.25 13.6 9 12 9z"/>
+                            </svg>
+                            <span class="hangup-text">HARD HANGUP</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- NEW CONTACT MODAL -->
+        <div class="modal-backdrop hidden" id="contactModal">
+            <div class="ios-modal">
+                <div class="modal-header">
+                    <button class="modal-cancel" id="cancelContactBtn">Cancel</button>
+                    <span class="modal-title">New Contact</span>
+                    <button class="modal-done" id="saveContactBtn">Done</button>
+                </div>
+                <div class="modal-body">
+                    <div class="input-group">
+                        <input type="text" id="newContactName" placeholder="First & Last Name">
+                        <input type="tel" id="newContactPhone" placeholder="Phone Number">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- BOTTOM TAB BAR -->
+        <nav class="ios-tab-bar">
+            <button class="tab-item" data-tab="tabFavorites">
+                <span class="tab-icon">⭐</span>
+                <span class="tab-label">Favorites</span>
+            </button>
+            <button class="tab-item" data-tab="tabRecents">
+                <span class="tab-icon">🕒</span>
+                <span class="tab-label">Recents</span>
+            </button>
+            <button class="tab-item" data-tab="tabContacts">
+                <span class="tab-icon">👤</span>
+                <span class="tab-label">Contacts</span>
+            </button>
+            <button class="tab-item active" data-tab="tabKeypad">
+                <span class="tab-icon">🔢</span>
+                <span class="tab-label">Keypad</span>
+            </button>
+            <button class="tab-item" data-tab="tabSettings">
+                <span class="tab-icon">⚙️</span>
+                <span class="tab-label">Settings</span>
+            </button>
+        </nav>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
