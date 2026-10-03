@@ -21,18 +21,21 @@ jobs:
         run: |
           npm install -g cordova
 
-      - name: Create Cordova Project & Build iOS
+      - name: Create Cordova Project & Build for Physical iOS Device
         run: |
           cordova create build_tmp com.phone.ptaios "PTA_iOS"
           cp index.html styles.css app.js build_tmp/www/
           cd build_tmp
           cordova platform add ios@latest
-          cordova build ios --no-sign
+          cordova build ios --device --no-sign
 
       - name: Package IPA File
         run: |
-          APP_PATH=$(find build_tmp/platforms/ios -name "*.app" | head -n 1)
-          echo "Found APP at $APP_PATH"
+          APP_PATH=$(find build_tmp/platforms/ios/build/device -name "*.app" | head -n 1)
+          if [ -z "$APP_PATH" ]; then
+            APP_PATH=$(find build_tmp/platforms/ios -name "*.app" | head -n 1)
+          fi
+          echo "Found Device APP at $APP_PATH"
           mkdir Payload
           cp -r "$APP_PATH" Payload/
           zip -r PTA-iOS.ipa Payload
